@@ -1,0 +1,156 @@
+{
+  "tool": "gost-docs-automation",
+  "source": {
+    "file": "supplier_export.csv",
+    "format": "csv",
+    "encoding": "utf-8-sig",
+    "delimiter": ";",
+    "sheet": null
+  },
+  "product": "",
+  "output": "examples\\supplier_vedomost.docx",
+  "header": {
+    "line": 4,
+    "columns": {
+      "designation": "Артикул",
+      "name": "Наименование",
+      "quantity": "Кол-во",
+      "unit": "Ед. изм.",
+      "note": "Примечание"
+    },
+    "unmatched": [
+      "Цена, руб."
+    ]
+  },
+  "counts": {
+    "source_rows": 12,
+    "accepted_rows": 8,
+    "items": 7,
+    "merged_groups": 1,
+    "errors": 3,
+    "warnings": 3
+  },
+  "issues": [
+    {
+      "level": "warning",
+      "code": "fractional_piece_quantity",
+      "message": "Дробное количество 45,5 для единицы «шт».",
+      "line": 7,
+      "column": "Количество"
+    },
+    {
+      "level": "info",
+      "code": "missing_designation",
+      "message": "Не заполнено обозначение — позиция останется без обозначения.",
+      "line": 8,
+      "column": "Обозначение"
+    },
+    {
+      "level": "error",
+      "code": "non_positive_quantity",
+      "message": "Количество должно быть больше нуля, получено 0 — строка пропущена.",
+      "line": 11,
+      "column": "Количество"
+    },
+    {
+      "level": "error",
+      "code": "empty_name",
+      "message": "Не заполнено наименование — строка пропущена.",
+      "line": 12,
+      "column": "Наименование"
+    },
+    {
+      "level": "warning",
+      "code": "fractional_piece_quantity",
+      "message": "Дробное количество 2,5 для единицы «упак».",
+      "line": 13,
+      "column": "Количество"
+    },
+    {
+      "level": "error",
+      "code": "bad_quantity",
+      "message": "Не удалось распознать количество «N/A» — строка пропущена.",
+      "line": 14,
+      "column": "Количество"
+    },
+    {
+      "level": "warning",
+      "code": "unknown_unit",
+      "message": "Неизвестная единица «бухта» — оставлена как есть.",
+      "line": 15,
+      "column": "Единица измерения"
+    },
+    {
+      "level": "info",
+      "code": "summary_row",
+      "message": "Строка итогов пропущена.",
+      "line": 16,
+      "column": null
+    },
+    {
+      "level": "info",
+      "code": "duplicate_merged",
+      "message": "Объединены дубли со строк 5, 6; итоговое количество 1500.",
+      "line": 5,
+      "column": null
+    }
+  ],
+  "items": [
+    {
+      "line": 5,
+      "designation": "АБВГ.123456.789",
+      "name": "Резистор С2-23 0,125 Вт",
+      "quantity": "1500",
+      "unit": "шт",
+      "note": "дубль поставки"
+    },
+    {
+      "line": 13,
+      "designation": "АБВГ.777.003",
+      "name": "Плата печатная",
+      "quantity": "2,5",
+      "unit": "упак",
+      "note": ""
+    },
+    {
+      "line": 15,
+      "designation": "АБВГ.777.005",
+      "name": "Кабель ВВГ 3х1,5",
+      "quantity": "0,5",
+      "unit": "бухта",
+      "note": ""
+    },
+    {
+      "line": 10,
+      "designation": "АБВГ.999.000",
+      "name": "Резистор С2-23 0,125 Вт",
+      "quantity": "12",
+      "unit": "компл",
+      "note": "под заказ"
+    },
+    {
+      "line": 7,
+      "designation": "КЛМН.555.001",
+      "name": "Конденсатор К50-35 100 мкФ",
+      "quantity": "45,5",
+      "unit": "шт",
+      "note": "аналог"
+    },
+    {
+      "line": 9,
+      "designation": "ТУ 16-505.757-78",
+      "name": "Провод МГШВ 0,5",
+      "quantity": "25",
+      "unit": "м",
+      "note": ""
+    },
+    {
+      "line": 8,
+      "designation": "",
+      "name": "Винт М3х12 ГОСТ 1491-80",
+      "quantity": "500",
+      "unit": "шт",
+      "note": ""
+    }
+  ]
+}
