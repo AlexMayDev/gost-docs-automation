@@ -147,7 +147,7 @@ def write_docx(
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
     table.autofit = False
 
-    for (label, _), cell in zip(COLUMNS, table.rows[0].cells):
+    for (label, _), cell in zip(COLUMNS, table.rows[0].cells, strict=True):
         _write_cell(cell, label, aligned=WD_ALIGN_PARAGRAPH.CENTER)
     _repeat_header(table.rows[0])
 
@@ -167,7 +167,7 @@ def write_docx(
             WD_ALIGN_PARAGRAPH.CENTER,
             WD_ALIGN_PARAGRAPH.LEFT,
         )
-        for cell, value, aligned in zip(cells, values, alignments):
+        for cell, value, aligned in zip(cells, values, alignments, strict=True):
             _write_cell(cell, value, aligned=aligned)
 
     _fixed_layout(table)
