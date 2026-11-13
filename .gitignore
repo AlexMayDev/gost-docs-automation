@@ -1,0 +1,22 @@
+# Виртуальные окружения
+.venv/
+venv/
+.venv-*/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+
+# Результаты прогонов и черновики документов
+output/
+out/
+
+# Служебное
+.DS_Store
+Thumbs.db
+*.log
