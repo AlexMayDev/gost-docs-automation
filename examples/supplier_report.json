@@ -7,7 +7,7 @@
     "delimiter": ";",
     "sheet": null
   },
-  "product": "",
+  "product": "АБВГ.000.001",
   "output": "examples\\supplier_vedomost.docx",
   "header": {
     "line": 4,

@@ -4,3 +4,4 @@
 # Бинарные примеры не должны перекодироваться.
 *.xlsx binary
 *.docx binary
+*.png binary

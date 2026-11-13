@@ -1,5 +1,9 @@
 # ГОСТ-документы: ведомость покупных изделий из грязных выгрузок
 
+[![CI](https://github.com/AlexMayPool/gost-docs-automation/actions/workflows/ci.yml/badge.svg)](https://github.com/AlexMayPool/gost-docs-automation/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+
 Инструмент берёт выгрузку из 1С, Excel или самодельный CSV поставщика и
 собирает из неё ведомость покупных изделий по ГОСТ 2.106-96 (форма 1) в DOCX.
 Работает офлайн, без LLM и без ручной правки таблиц: находит шапку, приводит
@@ -19,6 +23,25 @@ $ gost-docs samples/supplier_export.csv -o output/vedomost.docx --report output/
 Документ: output/vedomost.docx
 Отчёт: output/report.json
 ```
+
+## Демо
+
+Реальный запуск на [`samples/supplier_export.csv`](samples/supplier_export.csv):
+
+```bash
+gost-docs samples/supplier_export.csv \
+  -o output/vedomost.docx \
+  --report output/report.json \
+  --product АБВГ.000.001
+```
+
+![Вывод CLI: разбор грязной выгрузки и сводка замечаний](docs/demo-terminal.png)
+
+![Первая страница ведомости, собранной из этой выгрузки](docs/demo-document.png)
+
+Терминальный снимок — не макет: это stdout реального запуска, отрендеренный в
+изображение. Страница документа получена из сгенерированного DOCX через
+LibreOffice, без ручной правки. Подробности — в [`docs/demo.md`](docs/demo.md).
 
 ## Что умеет
 
