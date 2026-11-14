@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% block title %}Проверка данных — ГОСТ-документы{% endblock %}
+{% block content %}
+<section class="page-head">
+  <div>
+    <p class="eyebrow">Шаг 2 из 2</p>
+    <h1>Проверка данных</h1>
+  </div>
+  <a class="ghost" href="/">← Другой файл</a>
+</section>
+
+<div class="source-bar">
+  <span class="file-badge">{{ job.filename }}</span>
+  {% if report %}
+  <span>{{ report.source.format|upper }}{% if report.source.sheet %} · лист «{{ report.source.sheet }}»{% endif %}</span>
+  <span>шапка: строка {{ report.header.line }}</span>
+  {% endif %}
+</div>
+
+{% if error %}
+<div class="alert alert-error" role="alert">{{ error }}</div>
+{% endif %}
+{% if blocked %}
+<div class="alert alert-warning" role="alert">{{ blocked }}</div>
+{% endif %}
+
+{% if report %}
+<section class="counts" aria-label="Итоги разбора">
+  <div><b>{{ report.counts['items'] }}</b><span>{{ report.counts['items']|plural('позиция', 'позиции', 'позиций') }}</span></div>
+  <div><b>{{ report.counts.accepted_rows }}</b><span>принято строк</span></div>
+  <div><b>{{ report.counts.source_rows }}</b><span>строк в источнике</span></div>
+  <div class="{% if report.counts.errors %}bad{% endif %}"><b>{{ report.counts.errors }}</b><span>{{ report.counts.errors|plural('ошибка', 'ошибки', 'ошибок') }}</span></div>
+  <div class="{% if report.counts.warnings %}warn{% endif %}"><b>{{ report.counts.warnings }}</b><span>{{ report.counts.warnings|plural('предупреждение', 'предупреждения', 'предупреждений') }}</span></div>
+  <div><b>{{ report.counts.merged_groups }}</b><span>объединено</span></div>
+</section>
+
+{% if report.issues %}
+<section class="card">
+  <h2>Замечания</h2>
+  <ul class="issues">
+    {% for issue in report.issues %}
+    <li class="issue {{ issue.level }}">
+      <span class="issue-level">{{ issue.level }}</span>
+      <span class="issue-line">{% if issue.line %}стр. {{ issue.line }}{% else %}—{% endif %}</span>
+      <span class="issue-text">{{ issue.message }}</span>
+      <code>{{ issue.code }}</code>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>Позиции ведомости</h2>
+  {% if report['items'] %}
+  <div class="table-wrap">
+    <table class="items">
+      <thead>
+        <tr>
+          <th>№</th>
+          <th>Обозначение</th>
+          <th>Наименование</th>
+          <th class="num">Кол.</th>
+          <th>Ед.</th>
+          <th>Примечание</th>
+          <th class="num">Стр.</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in report['items'] %}
+        <tr>
+          <td class="num">{{ loop.index }}</td>
+          <td class="mono">{{ item.designation or "—" }}</td>
+          <td>{{ item.name }}</td>
+          <td class="num">{{ item.quantity }}</td>
+          <td>{{ item.unit }}</td>
+          <td class="muted">{{ item.note }}</td>
+          <td class="num muted">{{ item.line }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="empty">Ни одной позиции не осталось: все строки забракованы. Смотрите замечания выше.</p>
+  {% endif %}
+</section>
+{% else %}
+<div class="alert alert-warning">
+  Разбор не удался. Попробуйте выбрать другой лист или строку заголовка справа.
+</div>
+{% endif %}
+
+<form class="card options" method="post">
+  <input type="hidden" name="token" value="{{ job.token }}">
+  <h2>Параметры разбора</h2>
+
+  {% if job.sheets %}
+  <label>
+    <span>Лист XLSX</span>
+    <select name="sheet">
+      <option value="" {% if not options.sheet %}selected{% endif %}>активный</option>
+      {% for name in job.sheets %}
+      <option value="{{ name }}" {% if options.sheet == name %}selected{% endif %}>{{ name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  {% else %}
+  <input type="hidden" name="sheet" value="">
+  {% endif %}
+
+  <label>
+    <span>Обозначение изделия</span>
+    <input type="text" name="product" value="{{ options.product }}"
+           placeholder="например, АБВГ.000.001">
+  </label>
+
+  <div class="row">
+    <label>
+      <span>Строка заголовка</span>
+      <input type="number" name="header_row" min="1" value="{{ options.header_row or '' }}"
+             placeholder="авто">
+    </label>
+    <label>
+      <span>Порядок</span>
+      <select name="sort">
+        <option value="designation" {% if options.sort == "designation" %}selected{% endif %}>по обозначению</option>
+        <option value="name" {% if options.sort == "name" %}selected{% endif %}>по наименованию</option>
+        <option value="source" {% if options.sort == "source" %}selected{% endif %}>как в источнике</option>
+      </select>
+    </label>
+  </div>
+
+  <details class="advanced">
+    <summary>Ручное сопоставление</summary>
+    <div class="grid grid-maps">
+      {% for field in field_order %}
+      <label>
+        <span>{{ field_labels[field] }}</span>
+        <input type="text" name="map_{{ field }}" value="{{ options.maps.get(field, '') }}"
+               placeholder="колонка или номер">
+      </label>
+      {% endfor %}
+    </div>
+  </details>
+
+  <label class="checkbox">
+    <input type="checkbox" name="strict" {% if options.strict %}checked{% endif %}>
+    <span>Строгий режим: не создавать DOCX при ошибках</span>
+  </label>
+
+  <div class="actions">
+    <button class="secondary" type="submit" formaction="/preview">Перечитать</button>
+    <button class="primary" type="submit" formaction="/generate">Сформировать DOCX</button>
+  </div>
+  <p class="hint">Файл хранится локально один час и удаляется автоматически.</p>
+</form>
+{% endblock %}

@@ -6,7 +6,7 @@ import pytest
 from openpyxl import Workbook
 
 from gost_docs.model import ReadError
-from gost_docs.readers import read_table
+from gost_docs.readers import list_sheets, read_table
 
 
 def write_bytes(tmp_path: Path, name: str, data: bytes) -> Path:
@@ -150,3 +150,30 @@ def test_read_xlsx_empty_sheet(tmp_path: Path):
     workbook.save(path)
     with pytest.raises(ReadError, match="пуст"):
         read_table(path)
+
+
+def test_list_sheets_returns_names(tmp_path: Path):
+    path = tmp_path / "sheets.xlsx"
+    workbook = Workbook()
+    workbook.active.title = "Первый"
+    workbook.active.append(["one"])
+    workbook.create_sheet("Второй")
+    workbook.save(path)
+
+    assert list_sheets(path) == ["Первый", "Второй"]
+
+
+def test_list_sheets_csv_is_empty(tmp_path: Path):
+    path = write_bytes(tmp_path, "a.csv", b"a;b\n1;2\n")
+    assert list_sheets(path) == []
+
+
+def test_list_sheets_missing_file(tmp_path: Path):
+    with pytest.raises(ReadError, match="не найден"):
+        list_sheets(tmp_path / "nope.xlsx")
+
+
+def test_list_sheets_broken_file(tmp_path: Path):
+    path = write_bytes(tmp_path, "broken.xlsx", b"not a zip")
+    with pytest.raises(ReadError, match="Не удалось открыть"):
+        list_sheets(path)

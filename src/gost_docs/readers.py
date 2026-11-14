@@ -135,3 +135,20 @@ def _read_xlsx(path: Path, sheet: str | None) -> Table:
         )
     finally:
         workbook.close()
+
+
+def list_sheets(path: str | Path) -> list[str]:
+    """Вернуть имена листов XLSX. Для CSV и других форматов — пустой список."""
+    file_path = Path(path)
+    if not file_path.exists():
+        raise ReadError(f"Файл не найден: {file_path}")
+    if file_path.suffix.lower() not in XLSX_SUFFIXES:
+        return []
+    try:
+        workbook = load_workbook(file_path, read_only=True)
+    except Exception as exc:  # noqa: BLE001 - openpyxl бросает разные типы
+        raise ReadError(f"Не удалось открыть XLSX: {exc}") from exc
+    try:
+        return list(workbook.sheetnames)
+    finally:
+        workbook.close()

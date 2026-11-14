@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}ГОСТ-документы — из выгрузки в ведомость{% endblock %}
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">CSV / Excel → DOCX</p>
+  <h1>Из грязной выгрузки —<br>в ведомость по ГОСТ</h1>
+  <p class="lead">
+    Загрузите файл поставщика. Инструмент сам найдёт шапку, приведёт количества
+    и единицы к единому виду, покажет проблемные строки и соберёт документ
+    формы 1 ГОСТ 2.106-96.
+  </p>
+</section>
+
+{% if error %}
+<div class="alert alert-error" role="alert">{{ error }}</div>
+{% endif %}
+
+<form class="card form" method="post" action="/preview" enctype="multipart/form-data">
+  <label class="drop" for="file">
+    <span class="drop-title">Выберите CSV или XLSX</span>
+    <span class="drop-hint">до {{ max_upload_mb }} МБ · CSV, TSV, TXT, XLSX, XLSM</span>
+    <input id="file" type="file" name="file" accept=".csv,.tsv,.txt,.xlsx,.xlsm" required>
+  </label>
+
+  <div class="grid">
+    <label>
+      <span>Обозначение изделия</span>
+      <input type="text" name="product" value="{{ options.product }}"
+             placeholder="например, АБВГ.000.001">
+    </label>
+    <label>
+      <span>Лист XLSX</span>
+      <input type="text" name="sheet" value="{{ options.sheet }}"
+             placeholder="активный, если пусто">
+    </label>
+    <label>
+      <span>Строка заголовка</span>
+      <input type="number" name="header_row" min="1" value="{{ options.header_row or '' }}"
+             placeholder="найти автоматически">
+    </label>
+    <label>
+      <span>Порядок позиций</span>
+      <select name="sort">
+        <option value="designation" {% if options.sort == "designation" %}selected{% endif %}>по обозначению</option>
+        <option value="name" {% if options.sort == "name" %}selected{% endif %}>по наименованию</option>
+        <option value="source" {% if options.sort == "source" %}selected{% endif %}>как в источнике</option>
+      </select>
+    </label>
+  </div>
+
+  <details class="advanced">
+    <summary>Ручное сопоставление колонок</summary>
+    <p class="hint">
+      Заполняйте, только если шапка нестандартная. Можно указать имя колонки
+      или её номер. Обязательны «Наименование» и «Количество».
+    </p>
+    <div class="grid grid-maps">
+      {% for field in field_order %}
+      <label>
+        <span>{{ field_labels[field] }}</span>
+        <input type="text" name="map_{{ field }}" value="{{ options.maps.get(field, '') }}"
+               placeholder="колонка или номер">
+      </label>
+      {% endfor %}
+    </div>
+  </details>
+
+  <label class="checkbox">
+    <input type="checkbox" name="strict" {% if options.strict %}checked{% endif %}>
+    <span>Не создавать документ, если в данных есть ошибки</span>
+  </label>
+
+  <button class="primary" type="submit">Разобрать файл</button>
+</form>
+
+<aside class="notes">
+  <div>
+    <h2>Попробовать на примерах</h2>
+    <p>
+      {% for name in samples %}
+      <a href="/samples/{{ name }}">{{ sample_labels[name] }}</a>{% if not loop.last %} ·{% endif %}
+      {% endfor %}
+    </p>
+  </div>
+  <div>
+    <h2>Что будет дальше</h2>
+    <p>
+      Сначала — предпросмотр: позиции, количество, замечания по строкам.
+      Документ создаётся только после кнопки «Сформировать DOCX».
+    </p>
+  </div>
+</aside>
+{% endblock %}

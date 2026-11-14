@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Документ готов — ГОСТ-документы{% endblock %}
+{% block content %}
+<section class="success">
+  <div class="check" aria-hidden="true">✓</div>
+  <p class="eyebrow">Готово</p>
+  <h1>Ведомость сформирована</h1>
+  <p class="lead">
+    {{ report.counts['items'] }} {{ report.counts['items']|plural('позиция', 'позиции', 'позиций') }}
+    из {{ job.filename }}.
+    {% if report.counts.errors %}
+    Пропущено строк: {{ report.counts.errors }} — причины в отчёте.
+    {% else %}
+    Все строки прошли проверку.
+    {% endif %}
+  </p>
+
+  <div class="downloads">
+    <a class="primary button" href="/download/{{ job.token }}/docx">Скачать DOCX</a>
+    <a class="secondary button" href="/download/{{ job.token }}/report">Скачать JSON-отчёт</a>
+  </div>
+
+  <div class="counts">
+    <div><b>{{ report.counts['items'] }}</b><span>{{ report.counts['items']|plural('позиция', 'позиции', 'позиций') }}</span></div>
+    <div><b>{{ report.counts.merged_groups }}</b><span>объединено</span></div>
+    <div class="{% if report.counts.errors %}bad{% endif %}"><b>{{ report.counts.errors }}</b><span>{{ report.counts.errors|plural('ошибка', 'ошибки', 'ошибок') }}</span></div>
+    <div class="{% if report.counts.warnings %}warn{% endif %}"><b>{{ report.counts.warnings }}</b><span>{{ report.counts.warnings|plural('предупреждение', 'предупреждения', 'предупреждений') }}</span></div>
+  </div>
+
+  <p class="hint">
+    Документ — черновик формы 1. Перед подписанием добавьте рамку и основную
+    надпись по ГОСТ 2.104 и пройдите нормоконтроль.
+  </p>
+</section>
+
+{% if report.issues %}
+<section class="card">
+  <h2>Что стоит проверить</h2>
+  <ul class="issues">
+    {% for issue in report.issues if issue.level in ("error", "warning") %}
+    <li class="issue {{ issue.level }}">
+      <span class="issue-level">{{ issue.level }}</span>
+      <span class="issue-line">{% if issue.line %}стр. {{ issue.line }}{% else %}—{% endif %}</span>
+      <span class="issue-text">{{ issue.message }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<a class="ghost" href="/">← Разобрать другую выгрузку</a>
+{% endblock %}
