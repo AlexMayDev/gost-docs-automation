@@ -1,6 +1,6 @@
 # ГОСТ-документы: ведомость покупных изделий из грязных выгрузок
 
-[![CI](https://github.com/AlexMayPool/gost-docs-automation/actions/workflows/ci.yml/badge.svg)](https://github.com/AlexMayPool/gost-docs-automation/actions/workflows/ci.yml)
+[![CI](https://github.com/AlexMayDev/gost-docs-automation/actions/workflows/ci.yml/badge.svg)](https://github.com/AlexMayDev/gost-docs-automation/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
