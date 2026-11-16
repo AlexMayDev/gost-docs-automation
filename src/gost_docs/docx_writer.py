@@ -16,11 +16,12 @@ FONT = "Times New Roman"
 TABLE_FONT_SIZE = 10
 TITLE_FONT_SIZE = 14
 COLUMNS: tuple[tuple[str, int], ...] = (
-    ("№ п/п", 12),
-    ("Обозначение", 45),
-    ("Наименование", 88),
-    ("Кол. на изделие", 20),
-    ("Примечание", 15),
+    ("№ п/п", 10),
+    ("Обозначение", 38),
+    ("Наименование", 75),
+    ("Кол. на изделие", 18),
+    ("Ед. изм.", 15),
+    ("Примечание", 24),
 )
 DEFAULT_TITLE = "Ведомость покупных изделий"
 
@@ -136,7 +137,7 @@ def write_docx(
     product: str = "",
     title: str = DEFAULT_TITLE,
 ) -> Path:
-    """Сформировать ведомость покупных изделий (ГОСТ 2.106-96, форма 1)."""
+    """Сформировать ведомость покупных изделий (ГОСТ 2.106-96)."""
     document = Document()
     _set_document_defaults(document)
     _set_margins(document)
@@ -158,12 +159,14 @@ def write_docx(
             item.designation,
             item.name,
             format_quantity(item.quantity),
+            item.unit,
             item.note,
         )
         alignments = (
             WD_ALIGN_PARAGRAPH.CENTER,
             WD_ALIGN_PARAGRAPH.CENTER,
             WD_ALIGN_PARAGRAPH.LEFT,
+            WD_ALIGN_PARAGRAPH.CENTER,
             WD_ALIGN_PARAGRAPH.CENTER,
             WD_ALIGN_PARAGRAPH.LEFT,
         )

@@ -56,6 +56,7 @@ def test_docx_structure(tmp_path: Path):
         "Обозначение",
         "Наименование",
         "Кол. на изделие",
+        "Ед. изм.",
         "Примечание",
     ]
     assert len(table.rows) == 3
@@ -64,6 +65,7 @@ def test_docx_structure(tmp_path: Path):
         "АБВГ.123456.789",
         "Резистор С2-23 0,125 Вт",
         "1500",
+        "шт",
         "",
     ]
     assert [cell.text for cell in table.rows[2].cells] == [
@@ -71,6 +73,7 @@ def test_docx_structure(tmp_path: Path):
         "",
         "Винт М3х12",
         "0,5",
+        "м",
         "под заказ",
     ]
 
