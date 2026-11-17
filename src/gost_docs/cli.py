@@ -18,7 +18,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="gost-docs",
         description=(
-            "Превращает грязную CSV/Excel-выгрузку в ведомость покупных изделий по ГОСТ 2.106-96."
+            "Превращает грязную CSV/Excel-выгрузку в таблицу ВП в DOCX (6 граф формы 5, ГОСТ Р 2.106-2019)."
         ),
     )
     parser.add_argument("input", help="Путь к CSV или XLSX")

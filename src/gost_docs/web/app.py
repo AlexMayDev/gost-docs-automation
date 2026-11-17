@@ -240,7 +240,7 @@ def create_app(
 
     app = FastAPI(
         title="ГОСТ-документы",
-        description="CSV/XLSX → ведомость покупных изделий по ГОСТ 2.106-96",
+        description="CSV/XLSX → таблица ВП в DOCX (6 граф формы 5, ГОСТ Р 2.106-2019)",
         lifespan=lifespan,
     )
     app.state.store = store
@@ -455,7 +455,7 @@ app = create_app()
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="gost-docs-web",
-        description="Локальный веб-интерфейс для ведомости по ГОСТ 2.106-96.",
+        description="Локальный веб-интерфейс для сборки таблицы ВП.",
     )
     parser.add_argument(
         "--host", default="127.0.0.1", help="Интерфейс (по умолчанию только localhost)"

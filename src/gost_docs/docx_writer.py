@@ -137,7 +137,7 @@ def write_docx(
     product: str = "",
     title: str = DEFAULT_TITLE,
 ) -> Path:
-    """Сформировать ведомость покупных изделий (ГОСТ 2.106-96)."""
+    """Сформировать таблицу ВП (6 граф формы 5 по ГОСТ Р 2.106-2019)."""
     document = Document()
     _set_document_defaults(document)
     _set_margins(document)

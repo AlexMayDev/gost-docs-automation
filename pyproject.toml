@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "gost-docs-automation"
 version = "0.1.0"
-description = "Грязные CSV/Excel-выгрузки → ведомость покупных изделий по ГОСТ 2.106-96"
+description = "Грязные CSV/Excel-выгрузки → таблица ВП в DOCX (6 граф формы 5, ГОСТ Р 2.106-2019)"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
