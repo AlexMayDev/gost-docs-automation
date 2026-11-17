@@ -61,7 +61,7 @@ def test_missing_file(tmp_path: Path):
 
 
 def test_unsupported_format(tmp_path: Path):
-    path = write_bytes(tmp_path, "data.docx", b"PK\x03\x04")
+    path = write_bytes(tmp_path, "data.pdf", b"%PDF-1.4")
     with pytest.raises(ReadError, match="Неподдерживаемый формат"):
         read_table(path)
 

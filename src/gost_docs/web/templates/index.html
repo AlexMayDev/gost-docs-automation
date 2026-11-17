@@ -2,7 +2,7 @@
 {% block title %}ГОСТ-документы — из выгрузки в ведомость{% endblock %}
 {% block content %}
 <section class="hero">
-  <p class="eyebrow">CSV / Excel / скан → DOCX</p>
+  <p class="eyebrow">CSV / Excel → DOCX</p>
   <h1>Из грязной выгрузки —<br>в ведомость по ГОСТ</h1>
   <p class="lead">
     Загрузите файл поставщика. Инструмент сам найдёт шапку, приведёт количества
@@ -17,9 +17,9 @@
 
 <form class="card form" method="post" action="/preview" enctype="multipart/form-data">
   <label class="drop" for="file">
-    <span class="drop-title">Выберите файл: CSV, XLSX, скан или PDF</span>
-    <span class="drop-hint">до {{ max_upload_mb }} МБ · CSV, TSV, TXT, XLSX, XLSM, PNG, JPG, PDF</span>
-    <input id="file" type="file" name="file" accept=".csv,.tsv,.txt,.xlsx,.xlsm,.png,.jpg,.jpeg,.bmp,.tif,.tiff,.webp,.pdf" required>
+    <span class="drop-title">Выберите CSV или XLSX</span>
+    <span class="drop-hint">до {{ max_upload_mb }} МБ · CSV, TSV, TXT, XLSX, XLSM</span>
+    <input id="file" type="file" name="file" accept=".csv,.tsv,.txt,.xlsx,.xlsm" required>
   </label>
 
   <div class="grid">

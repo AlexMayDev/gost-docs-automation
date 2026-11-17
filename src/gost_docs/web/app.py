@@ -34,21 +34,7 @@ SAMPLE_CANDIDATES = (
     PACKAGE_DIR / "samples",
 )
 
-ALLOWED_SUFFIXES = {
-    ".csv",
-    ".tsv",
-    ".txt",
-    ".xlsx",
-    ".xlsm",
-    ".png",
-    ".jpg",
-    ".jpeg",
-    ".bmp",
-    ".tif",
-    ".tiff",
-    ".webp",
-    ".pdf",
-}
+ALLOWED_SUFFIXES = {".csv", ".tsv", ".txt", ".xlsx", ".xlsm"}
 SAMPLE_FILES = {
     "supplier_export.csv": "text/csv; charset=utf-8",
     "purchase_list.xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -254,7 +240,7 @@ def create_app(
 
     app = FastAPI(
         title="ГОСТ-документы",
-        description="CSV/XLSX/сканы → таблица ВП в DOCX (6 граф формы 5, ГОСТ Р 2.106-2019)",
+        description="CSV/XLSX → таблица ВП в DOCX (6 граф формы 5, ГОСТ Р 2.106-2019)",
         lifespan=lifespan,
     )
     app.state.store = store
@@ -351,13 +337,10 @@ def create_app(
         if upload is not None and hasattr(upload, "read"):
             filename = getattr(upload, "filename", "") or ""
             if not filename:
-                return None, None, "Выберите файл: CSV, XLSX, скан или PDF."
+                return None, None, "Выберите файл CSV или XLSX."
             suffix = Path(filename).suffix.lower()
             if suffix not in ALLOWED_SUFFIXES:
-                return None, None, (
-                    "Неподдерживаемый формат. Нужен CSV, TSV, TXT, XLSX, XLSM, "
-                    "PNG, JPG или PDF."
-                )
+                return None, None, ("Неподдерживаемый формат. Нужен CSV, TSV, TXT, XLSX или XLSM.")
             try:
                 data = await read_upload(upload, max_upload)
                 job = store.create(filename, data)

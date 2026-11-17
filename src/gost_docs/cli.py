@@ -21,10 +21,7 @@ def build_parser() -> argparse.ArgumentParser:
             "Превращает грязную CSV/Excel-выгрузку в таблицу ВП в DOCX (6 граф формы 5, ГОСТ Р 2.106-2019)."
         ),
     )
-    parser.add_argument(
-        "input",
-        help="Путь к CSV, XLSX, PNG/JPG или PDF (сканы и фото распознаются через OCR)",
-    )
+    parser.add_argument("input", help="Путь к CSV или XLSX")
     parser.add_argument(
         "-o",
         "--output",

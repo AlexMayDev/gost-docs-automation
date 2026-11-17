@@ -17,7 +17,7 @@ CSV_SUFFIXES = {".csv", ".tsv", ".txt"}
 
 
 def read_table(path: str | Path, sheet: str | None = None) -> Table:
-    """Прочитать CSV, XLSX, скан или PDF и вернуть сырые строки, приведённые к тексту."""
+    """Прочитать CSV или XLSX и вернуть сырые строки, приведённые к тексту."""
     file_path = Path(path)
     if not file_path.exists():
         raise ReadError(f"Файл не найден: {file_path}")
@@ -26,13 +26,8 @@ def read_table(path: str | Path, sheet: str | None = None) -> Table:
         return _read_xlsx(file_path, sheet)
     if suffix in CSV_SUFFIXES:
         return _read_csv(file_path)
-    from .ocr import OCR_SUFFIXES, read_ocr_table
-
-    if suffix in OCR_SUFFIXES:
-        return read_ocr_table(file_path)
     raise ReadError(
-        f"Неподдерживаемый формат «{suffix or file_path.name}». "
-        "Нужен CSV, TSV, XLSX, а также PNG/JPG или PDF — для них включён OCR."
+        f"Неподдерживаемый формат «{suffix or file_path.name}». Нужен CSV, TSV или XLSX."
     )
 
 
