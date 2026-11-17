@@ -14,6 +14,28 @@ CSV_ENCODINGS = ("utf-8-sig", "utf-8", "cp1251")
 DELIMITERS = (";", "\t", ",", "|")
 XLSX_SUFFIXES = {".xlsx", ".xlsm"}
 CSV_SUFFIXES = {".csv", ".tsv", ".txt"}
+IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".bmp", ".gif", ".tif", ".tiff", ".webp"}
+
+SCAN_MESSAGE = (
+    "Похоже, это скан или фотография. Инструмент работает с текстовыми таблицами: "
+    "CSV, TSV, XLSX, XLSM. Пересохраните таблицу в Excel или CSV из исходной программы. "
+    "Если есть только скан — напишите, обсудим разбор вручную."
+)
+PDF_MESSAGE = (
+    "PDF не поддерживается: инструмент не распознаёт сканы. Если в PDF есть текстовый "
+    "слой, сохраните таблицу в Excel или CSV; если это скан — это ручной разбор, "
+    "обсудим отдельно."
+)
+
+
+def unsupported_format_message(name: str) -> str:
+    """Объяснить отказ по формату: скан, PDF и всё остальное — разные причины."""
+    suffix = Path(name).suffix.lower()
+    if suffix == ".pdf":
+        return PDF_MESSAGE
+    if suffix in IMAGE_SUFFIXES:
+        return f"«{suffix}» — {SCAN_MESSAGE}"
+    return f"Неподдерживаемый формат «{suffix or Path(name).name}». Нужен CSV, TSV или XLSX."
 
 
 def read_table(path: str | Path, sheet: str | None = None) -> Table:
@@ -26,9 +48,7 @@ def read_table(path: str | Path, sheet: str | None = None) -> Table:
         return _read_xlsx(file_path, sheet)
     if suffix in CSV_SUFFIXES:
         return _read_csv(file_path)
-    raise ReadError(
-        f"Неподдерживаемый формат «{suffix or file_path.name}». Нужен CSV, TSV или XLSX."
-    )
+    raise ReadError(unsupported_format_message(file_path.name))
 
 
 def _decode(raw: bytes) -> tuple[str, str]:
@@ -47,7 +67,10 @@ def _guess_delimiter(text: str) -> str:
     scores = {delimiter: sum(line.count(delimiter) for line in lines) for delimiter in DELIMITERS}
     delimiter = max(scores, key=lambda item: scores[item])
     if scores[delimiter] == 0:
-        raise ReadError("Не удалось определить разделитель CSV (нет «;», «,», табуляции или «|»).")
+        raise ReadError(
+            "Не удалось определить разделитель CSV: в файле нет «;», «,», табуляции или «|». "
+            "Сохраните таблицу как CSV с разделителем «;» или «,» либо пришлите XLSX."
+        )
     return delimiter
 
 
@@ -123,6 +146,14 @@ def _read_xlsx(path: Path, sheet: str | None) -> Table:
             if any(cell.strip() for cell in row):
                 last_filled = index
         if not last_filled:
+            pictures = len(getattr(worksheet, "_images", []) or [])
+            if pictures:
+                raise ReadError(
+                    f"В листе «{worksheet.title}» нет текстовой таблицы: найдено "
+                    f"изображений — {pictures}. Похоже, данные вставлены картинкой. "
+                    "Инструмент не распознаёт изображения: пришлите XLSX с текстовыми "
+                    "ячейками или CSV."
+                )
             raise ReadError(f"Лист «{worksheet.title}» пуст.")
         rows = grid[:last_filled]
         numbers = list(range(1, last_filled + 1))

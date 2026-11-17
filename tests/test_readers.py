@@ -61,8 +61,21 @@ def test_missing_file(tmp_path: Path):
 
 
 def test_unsupported_format(tmp_path: Path):
-    path = write_bytes(tmp_path, "data.pdf", b"%PDF-1.4")
+    path = write_bytes(tmp_path, "data.xyz", b"whatever")
     with pytest.raises(ReadError, match="Неподдерживаемый формат"):
+        read_table(path)
+
+
+def test_pdf_rejected_with_reason(tmp_path: Path):
+    path = write_bytes(tmp_path, "scan.pdf", b"%PDF-1.4")
+    with pytest.raises(ReadError, match="PDF не поддерживается"):
+        read_table(path)
+
+
+@pytest.mark.parametrize("suffix", [".png", ".jpg", ".jpeg", ".tiff"])
+def test_image_rejected_with_reason(tmp_path: Path, suffix: str):
+    path = write_bytes(tmp_path, f"scan{suffix}", b"\x89PNG\r\n")
+    with pytest.raises(ReadError, match="скан или фотография"):
         read_table(path)
 
 
@@ -149,6 +162,21 @@ def test_read_xlsx_empty_sheet(tmp_path: Path):
     workbook = Workbook()
     workbook.save(path)
     with pytest.raises(ReadError, match="пуст"):
+        read_table(path)
+
+
+def test_read_xlsx_picture_only_sheet(tmp_path: Path):
+    image_module = pytest.importorskip("PIL.Image")
+    from openpyxl.drawing.image import Image as XLImage
+
+    picture = tmp_path / "table.png"
+    image_module.new("RGB", (40, 20), "white").save(picture)
+    path = tmp_path / "picture.xlsx"
+    workbook = Workbook()
+    workbook.active.add_image(XLImage(picture), "A1")
+    workbook.save(path)
+
+    with pytest.raises(ReadError, match="картинкой"):
         read_table(path)
 
 

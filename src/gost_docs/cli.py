@@ -11,7 +11,7 @@ from .mapping import detect_header, parse_overrides
 from .model import GostDocsError
 from .readers import read_table
 from .report import build_report, save_report, summary_lines
-from .validate import build_items, sort_items
+from .validate import build_items, empty_result_message, sort_items
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -93,6 +93,10 @@ def run(args: argparse.Namespace) -> int:
         if report_path is not None:
             print(f"Отчёт: {report_path}", file=sys.stderr)
         return 2
+
+    empty_reason = empty_result_message(result)
+    if empty_reason is not None:
+        raise GostDocsError(empty_reason)
 
     write_docx(output, result.items, product=args.product)
 

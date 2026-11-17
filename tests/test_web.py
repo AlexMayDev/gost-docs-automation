@@ -181,13 +181,41 @@ def test_download_before_generate(client: TestClient, csv_sample: Path):
     assert client.get(f"/download/{token}/docx").status_code == 404
 
 
+def test_generate_refuses_empty_document(client: TestClient):
+    response = client.post(
+        "/generate",
+        files={"file": ("header_only.csv", "Наименование;Количество\n".encode(), "text/csv")},
+    )
+    assert response.status_code == 400
+    assert "пустой файл" in response.text
+
+
+def test_scan_upload_explains_manual_review(client: TestClient):
+    response = client.post(
+        "/preview",
+        files={"file": ("scan.png", b"\x89PNG\r\n", "image/png")},
+    )
+    assert response.status_code == 400
+    assert "скан или фотография" in response.text
+    assert "разбор вручную" in response.text
+
+
 def test_unsupported_suffix(client: TestClient):
     response = client.post(
         "/preview",
-        files={"file": ("data.pdf", b"%PDF-1.4", "application/pdf")},
+        files={"file": ("data.xyz", b"whatever", "application/octet-stream")},
     )
     assert response.status_code == 400
     assert "Неподдерживаемый формат" in response.text
+
+
+def test_pdf_upload_explains_manual_review(client: TestClient):
+    response = client.post(
+        "/preview",
+        files={"file": ("scan.pdf", b"%PDF-1.4", "application/pdf")},
+    )
+    assert response.status_code == 400
+    assert "PDF не поддерживается" in response.text
 
 
 def test_empty_upload(client: TestClient):

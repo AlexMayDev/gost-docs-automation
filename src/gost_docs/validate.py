@@ -231,6 +231,23 @@ def build_items(table: Table, header: HeaderMatch) -> BuildResult:
     )
 
 
+def empty_result_message(result: BuildResult) -> str | None:
+    """Объяснить, почему документ пуст, вместо выдачи пустого DOCX."""
+    if result.items:
+        return None
+    if result.source_rows == 0:
+        return (
+            "Строк с данными не найдено: после шапки нет ни одной заполненной строки. "
+            "Документ не создан, чтобы не отдавать пустой файл. Проверьте лист, "
+            "номер строки заголовка и диапазон данных."
+        )
+    return (
+        f"Ни одна строка не прошла проверку: ошибок {result.errors} из "
+        f"{result.source_rows}. Документ не создан, чтобы не отдавать пустой файл — "
+        "смотрите отчёт."
+    )
+
+
 def sort_items(items: list[Item], mode: str = "designation") -> list[Item]:
     """Упорядочить позиции для документа."""
     if mode == "source":

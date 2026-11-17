@@ -21,9 +21,9 @@ from starlette.concurrency import run_in_threadpool
 from ..docx_writer import write_docx
 from ..mapping import FIELD_LABELS, FIELD_ORDER, detect_header, parse_overrides
 from ..model import BuildResult, GostDocsError, ReadError
-from ..readers import list_sheets, read_table
+from ..readers import list_sheets, read_table, unsupported_format_message
 from ..report import build_report, save_report
-from ..validate import build_items, sort_items
+from ..validate import build_items, empty_result_message, sort_items
 
 PACKAGE_DIR = Path(__file__).resolve().parent
 TEMPLATE_DIR = PACKAGE_DIR / "templates"
@@ -340,7 +340,7 @@ def create_app(
                 return None, None, "Выберите файл CSV или XLSX."
             suffix = Path(filename).suffix.lower()
             if suffix not in ALLOWED_SUFFIXES:
-                return None, None, ("Неподдерживаемый формат. Нужен CSV, TSV, TXT, XLSX или XLSM.")
+                return None, None, unsupported_format_message(filename)
             try:
                 data = await read_upload(upload, max_upload)
                 job = store.create(filename, data)
@@ -388,6 +388,17 @@ def create_app(
                     "В данных есть ошибки, а включён строгий режим. "
                     "Документ не создан — исправьте выгрузку или снимите галочку."
                 ),
+                status_code=400,
+            )
+
+        empty_reason = empty_result_message(result)
+        if empty_reason is not None:
+            return preview(
+                request,
+                job,
+                options,
+                report=report,
+                blocked=empty_reason,
                 status_code=400,
             )
 

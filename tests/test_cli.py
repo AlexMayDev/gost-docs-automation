@@ -51,6 +51,18 @@ def test_cli_strict_passes_clean_data(tmp_path: Path, xlsx_sample: Path):
     assert output.exists()
 
 
+def test_cli_refuses_empty_document(tmp_path: Path, capsys):
+    source = tmp_path / "header_only.csv"
+    source.write_text("Наименование;Количество\n", encoding="utf-8")
+    output = tmp_path / "vedomost.docx"
+
+    code = main([str(source), "-o", str(output)])
+
+    assert code == 1
+    assert not output.exists()
+    assert "пустой файл" in capsys.readouterr().err
+
+
 def test_cli_json_output(tmp_path: Path, csv_sample: Path, capsys):
     output = tmp_path / "vedomost.docx"
     assert main([str(csv_sample), "-o", str(output), "--json"]) == 0
