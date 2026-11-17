@@ -23,7 +23,6 @@ ocr = [
 ]
 ocr-windows = [
     "pypdfium2>=4.30,<6",
-    "Pillow>=10.0,<12",
     "winrt-runtime>=2.0",
     "winrt-Windows.Media.Ocr>=2.0",
     "winrt-Windows.Graphics.Imaging>=2.0",
