@@ -87,6 +87,10 @@ def build_items(table: Table, header: HeaderMatch) -> BuildResult:
         source_rows += 1
 
         designation_raw = _cell(row, header.mapping.get("designation"))
+        if table.fmt == "ocr":
+            from .ocr import fix_designation
+
+            designation_raw = fix_designation(designation_raw)
         name_raw = _cell(row, header.mapping.get("name"))
         quantity_raw = _cell(row, header.mapping.get("quantity"))
         unit_raw = _cell(row, header.mapping.get("unit"))
@@ -202,6 +206,19 @@ def build_items(table: Table, header: HeaderMatch) -> BuildResult:
                     level="info",
                     code="missing_designation",
                     message="Не заполнено обозначение — позиция останется без обозначения.",
+                    line=line,
+                    column="Обозначение",
+                )
+            )
+        elif table.fmt == "ocr" and re.search(r"[()<>|~_]", designation_raw):
+            issues.append(
+                Issue(
+                    level="warning",
+                    code="ocr_designation",
+                    message=(
+                        f"Обозначение «{designation_raw}» похоже на ошибку распознавания — "
+                        "сверьте с исходником."
+                    ),
                     line=line,
                     column="Обозначение",
                 )

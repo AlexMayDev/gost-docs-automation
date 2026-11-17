@@ -184,7 +184,7 @@ def test_download_before_generate(client: TestClient, csv_sample: Path):
 def test_unsupported_suffix(client: TestClient):
     response = client.post(
         "/preview",
-        files={"file": ("data.pdf", b"%PDF-1.4", "application/pdf")},
+        files={"file": ("data.docx", b"PK\x03\x04", "application/msword")},
     )
     assert response.status_code == 400
     assert "Неподдерживаемый формат" in response.text

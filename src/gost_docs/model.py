@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from decimal import Decimal
 from pathlib import Path
+from typing import Any
 
 
 class GostDocsError(Exception):
@@ -28,6 +29,7 @@ class Table:
     encoding: str | None = None
     delimiter: str | None = None
     sheet: str | None = None
+    meta: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass

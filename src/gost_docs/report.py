@@ -13,7 +13,14 @@ from .normalize import format_quantity
 def source_label(table: Table) -> str:
     if table.fmt == "csv":
         return f"CSV, кодировка {table.encoding}, разделитель «{table.delimiter}»"
-    return f"XLSX, лист «{table.sheet}»"
+    if table.fmt == "xlsx":
+        return f"XLSX, лист «{table.sheet}»"
+    if table.fmt == "ocr":
+        info = table.meta.get("ocr", {})
+        engine = info.get("engine", "?")
+        pages = info.get("pages", 1)
+        return f"OCR ({engine}), страниц: {pages}"
+    return table.fmt
 
 
 def build_report(
@@ -33,6 +40,7 @@ def build_report(
             "encoding": table.encoding,
             "delimiter": table.delimiter,
             "sheet": table.sheet,
+            "ocr": table.meta.get("ocr"),
         },
         "product": product,
         "output": output,
@@ -89,6 +97,11 @@ def summary_lines(
         ),
         f"Ошибки: {result.errors}, предупреждения: {result.warnings}",
     ]
+    if result.table.fmt == "ocr":
+        lines.append(
+            "OCR: сверьте количества и обозначения с исходником — "
+            "распознавание не гарантирует точность."
+        )
 
     notable = [issue for issue in result.issues if issue.level in {"error", "warning"}]
     for issue in notable[:10]:
